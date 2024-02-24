@@ -1,40 +1,59 @@
 #!/usr/bin/python3
 """
-Using what you did in the task #0,
-extend your Python script to export
-data in the CSV format.
+This script fetches tasks owned by a specific user from an API
+and exports the data in CSV format.
 
 Requirements:
-
-~ Records all tasks that are owned by this employee
-~ Format must be:
-"USER_ID","USERNAME","TASK_COMPLETED_STATUS","TASK_TITLE"
-~ File name must be: USER_ID.csv
+- Records all tasks owned by the specified user
+- CSV format: "USER_ID","USERNAME","TASK_COMPLETED_STATUS","TASK_TITLE"
+- File name: USER_ID.csv
+- Print the number of tasks written to the CSV file
 """
-if __name__ == "__main__":
-    import csv
-    import json
-    import requests
-    import sys
-    # using this url https://jsonplaceholder.typicode.com/todos/
-    # add a query string of userId = 2 using the requests module
-    url1 = "https://jsonplaceholder.typicode.com/todos"
-    url2 = f"https://jsonplaceholder.typicode.com/users/{sys.argv[1]}"
-    payload = {"userId": sys.argv[1]}
-    # a single variable used to accept the response
-    # after request is made using the module
-    req_rep1 = requests.get(url1, params=payload)
-    req_rep2 = requests.get(url2)
-    req_rep1 = req_rep1.json()
-    req_rep2 = req_rep2.json()
-    # file name depends on id
-    filename = f"{sys.argv[1]}.csv"
+
+import csv
+import requests
+import sys
+
+def fetch_user_tasks(user_id):
+    url_tasks = "https://jsonplaceholder.typicode.com/todos"
+    url_user = f"https://jsonplaceholder.typicode.com/users/{user_id}"
+
+    try:
+        # Fetch tasks and user information
+        tasks_response = requests.get(url_tasks, params={"userId": user_id})
+        user_response = requests.get(url_user)
+
+        tasks = tasks_response.json()
+        user = user_response.json()
+
+        return tasks, user
+
+    except requests.RequestException as e:
+        print(f"Error fetching data: {e}")
+        sys.exit(1)
+
+def export_tasks_to_csv(tasks, user):
+    user_id = user['id']
+    username = user['username']
+    filename = f"{user_id}.csv"
+
     with open(filename, 'w', newline='') as csvfile:
-        # create a csv writer object
-        data_writer = csv.writer(csvfile, delimiter=",", quotechar='"',
-                                 quoting=csv.QUOTE_ALL)
-        # iterate through the first request only and use the value of some key
-        # and use the username of the second request for every iteration
-        for data in req_rep1:
-            data_writer.writerow([data["userId"], req_rep2["username"],
-                                 data["completed"], data["title"]])
+        csv_writer = csv.writer(csvfile)
+        csv_writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
+
+        for task in tasks:
+            csv_writer.writerow([user_id, username, task["completed"], task["title"]])
+
+    return filename
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python script.py <USER_ID>")
+        sys.exit(1)
+
+    user_id = sys.argv[1]
+    tasks, user = fetch_user_tasks(user_id)
+    csv_filename = export_tasks_to_csv(tasks, user)
+
+    print(f"Number of tasks in CSV: {len(tasks)}")
+    print(f"CSV file '{csv_filename}' has been created successfully.")
