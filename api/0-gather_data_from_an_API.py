@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 """
-Script to fetch and display TODO list progress of an employee using a REST API.
+Your script's docstring explaining its purpose and usage.
 """
 
 import requests
