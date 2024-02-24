@@ -34,8 +34,9 @@ def get_employee_todo_progress(employee_id):
         completed_tasks = sum(1 for todo in todos_data if todo.get('completed'))
 
         # Print progress
-        print("Employee {} is done with tasks ({}/{})".format(
-            employee_name, completed_tasks, total_tasks) + ":")
+        progress_message = "Employee {} is done with tasks ({}/{})".format(
+            employee_name, completed_tasks, total_tasks) + ":"
+        print(progress_message)
         for todo in todos_data:
             if todo.get('completed'):
                 print("\t{}".format(todo.get('title')))
