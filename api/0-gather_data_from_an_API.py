@@ -13,7 +13,7 @@ def get_employee_todo_progress(employee_id):
     Fetches and displays the TODO list progress of an employee.
 
     Args:
-        employee_id (int): The ID of the employee whose progress needs to be fetched.
+        employee_id (int): The ID of the employee whose progress needed
     """
     base_url = "https://jsonplaceholder.typicode.com"
     user_url = f"{base_url}/users/{employee_id}"
@@ -31,10 +31,11 @@ def get_employee_todo_progress(employee_id):
 
         # Count completed and total tasks
         total_tasks = len(todos_data)
-        completed_tasks = sum(1 for todo in todos_data if todo.get('completed'))
+        completed_tasks = sum(1 for todo in todos_data if todo.get('done'))
 
         # Print progress
-        print(f"Employee {employee_name} is done with tasks ({completed_tasks}/{total_tasks}):")
+       print("Employee {} is done with tasks ({}/{})".format(employee_name, completed_tasks, total_tasks) + ":")
+
         for todo in todos_data:
             if todo.get('completed'):
                 print(f"\t{todo.get('title')}")
