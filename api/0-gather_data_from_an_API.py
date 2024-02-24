@@ -13,11 +13,11 @@ def get_employee_todo_progress(employee_id):
     Fetches and displays the TODO list progress of an employee.
 
     Args:
-        employee_id (int): The ID of the employee whose progress needed
+        employee_id (int): The ID of the employee whose progress needs to be fetched.
     """
     base_url = "https://jsonplaceholder.typicode.com"
-    user_url = f"{base_url}/users/{employee_id}"
-    todos_url = f"{base_url}/todos?userId={employee_id}"
+    user_url = "{}/users/{}".format(base_url, employee_id)
+    todos_url = "{}/todos?userId={}".format(base_url, employee_id)
 
     try:
         # Fetch user data
@@ -31,17 +31,17 @@ def get_employee_todo_progress(employee_id):
 
         # Count completed and total tasks
         total_tasks = len(todos_data)
-        completed_tasks = sum(1 for todo in todos_data if todo.get('done'))
+        completed_tasks = sum(1 for todo in todos_data if todo.get('completed'))
 
         # Print progress
-       print("Employee {} is done with tasks ({}/{})".format(employee_name, completed_tasks, total_tasks) + ":")
-
+        print("Employee {} is done with tasks ({}/{})".format(
+            employee_name, completed_tasks, total_tasks) + ":")
         for todo in todos_data:
             if todo.get('completed'):
-                print(f"\t{todo.get('title')}")
+                print("\t{}".format(todo.get('title')))
 
     except requests.exceptions.RequestException as e:
-        print(f"Error: {e}")
+        print("Error: {}".format(e))
 
 
 if __name__ == "__main__":
