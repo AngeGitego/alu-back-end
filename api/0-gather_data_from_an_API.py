@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 """
-Your script's docstring explaining its purpose and usage.
+Script to fetch and display TODO list progress of an employee using a REST API.
 """
 
 import requests
@@ -16,8 +16,8 @@ def get_employee_todo_progress(employee_id):
         employee_id (int): The ID of the employee whose progress needs to be fetched.
     """
     base_url = "https://jsonplaceholder.typicode.com"
-    user_url = "{}/users/{}".format(base_url, employee_id)
-    todos_url = "{}/todos?userId={}".format(base_url, employee_id)
+    user_url = f"{base_url}/users/{employee_id}"
+    todos_url = f"{base_url}/todos?userId={employee_id}"
 
     try:
         # Fetch user data
@@ -34,19 +34,18 @@ def get_employee_todo_progress(employee_id):
         completed_tasks = sum(1 for todo in todos_data if todo.get('completed'))
 
         # Print progress
-        progress_message = "Employee {} is done with tasks ({}/{})".format(employee_name, completed_tasks, total_tasks) + ":"
-        print(progress_message)
+        print(f"Employee {employee_name} is done with tasks ({completed_tasks}/{total_tasks}):")
         for todo in todos_data:
             if todo.get('completed'):
-                print("\t{}".format(todo.get('title')))
+                print(f"\t{todo.get('title')}")
 
     except requests.exceptions.RequestException as e:
-        print("Error: {}".format(e))
+        print(f"Error: {e}")
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python script.py <employee_id>")
+        print("Usage: python 0-gather_data_from_an_API.py <employee_id>")
         sys.exit(1)
 
     employee_id = int(sys.argv[1])
