@@ -1,44 +1,40 @@
 #!/usr/bin/python3
 """
-Using a REST API and an EMP_ID, save info about their TODO list in a csv file
+Using what you did in the task #0,
+extend your Python script to export
+data in the CSV format.
+
+Requirements:
+
+~ Records all tasks that are owned by this employee
+~ Format must be:
+"USER_ID","USERNAME","TASK_COMPLETED_STATUS","TASK_TITLE"
+~ File name must be: USER_ID.csv
 """
-import csv
-import requests
-import sys
-
-
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python3 script.py <EMP_ID>")
-        sys.exit(1)
-
-    EMP_ID = sys.argv[1]
-    BASE_URL = 'https://jsonplaceholder.typicode.com'
-
-    # Retrieve employee data
-    employee_response = requests.get(BASE_URL + f'/users/{EMP_ID}')
-    if employee_response.status_code != 200:
-        print(f"Failed to retrieve employee data: {employee_response.status_code}")
-        sys.exit(1)
-    
-    employee_data = employee_response.json()
-    EMPLOYEE_NAME = employee_data.get("username")
-
-    # Retrieve employee's TODO list
-    todos_response = requests.get(BASE_URL + f'/todos?userId={EMP_ID}')
-    if todos_response.status_code != 200:
-        print(f"Failed to retrieve TODO list: {todos_response.status_code}")
-        sys.exit(1)
-
-    todos_data = todos_response.json()
-
-    # Write data to CSV file
-    csv_filename = f"{EMP_ID}.csv"
-    with open(csv_filename, "w", newline="") as csvfile:
-        csv_writer = csv.writer(csvfile)
-        csv_writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
-
-        for todo in todos_data:
-            csv_writer.writerow([EMP_ID, EMPLOYEE_NAME, str(todo["completed"]), todo["title"]])
-
-    print(f"CSV file '{csv_filename}' has been created.")
+    import csv
+    import json
+    import requests
+    import sys
+    # using this url https://jsonplaceholder.typicode.com/todos/
+    # add a query string of userId = 2 using the requests module
+    url1 = "https://jsonplaceholder.typicode.com/todos"
+    url2 = f"https://jsonplaceholder.typicode.com/users/{sys.argv[1]}"
+    payload = {"userId": sys.argv[1]}
+    # a single variable used to accept the response
+    # after request is made using the module
+    req_rep1 = requests.get(url1, params=payload)
+    req_rep2 = requests.get(url2)
+    req_rep1 = req_rep1.json()
+    req_rep2 = req_rep2.json()
+    # file name depends on id
+    filename = f"{sys.argv[1]}.csv"
+    with open(filename, 'w', newline='') as csvfile:
+        # create a csv writer object
+        data_writer = csv.writer(csvfile, delimiter=",", quotechar='"',
+                                 quoting=csv.QUOTE_ALL)
+        # iterate through the first request only and use the value of some key
+        # and use the username of the second request for every iteration
+        for data in req_rep1:
+            data_writer.writerow([data["userId"], req_rep2["username"],
+                                 data["completed"], data["title"]])
