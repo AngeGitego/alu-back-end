@@ -1,41 +1,33 @@
 #!/usr/bin/python3
-"""Script that gets user data (Todo list) from API
-and then export the result to csv file. """
-
-import csv
+"""
+Using a REST API and an EMP_ID, save info about their TODO list in a csv file
+"""
 import requests
 import sys
 
 
-def main():
-    """main function"""
-    user_id = int(sys.argv[1])
-    todo_url = 'https://jsonplaceholder.typicode.com/todos'
-    user_url = 'https://jsonplaceholder.typicode.com/users/{}'.format(user_id)
-
-    file_content = []
-
-    response = requests.get(todo_url)
-    user_name = requests.get(user_url).json().get('username')
-
-    for todo in response.json():
-        if todo.get('userId') == user_id:
-            file_content.append(
-                [str(user_id),
-                 user_name,
-                 todo.get('completed'),
-                 "{}".format(todo.get('title'))])
-
-    print(file_content)
-    file_name = "{}.csv".format(user_id)
-    with open(file_name, 'w', newline='') as csv_file:
-        csv_writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
-        for row in file_content:
-            for item in row:
-                str(item)
-            csv_writer.writerow(row)
-        print('file written successfully')
-
-
 if __name__ == "__main__":
-    main()
+    """ main section """
+    EMP_ID = sys.argv[1]
+    BASE_URL = 'https://jsonplaceholder.typicode.com'
+    employee = requests.get(
+        BASE_URL + f'/users/{EMP_ID}/').json()
+    EMPLOYEE_NAME = employee.get("username")
+    employee_todos = requests.get(
+        BASE_URL + f'/users/{EMP_ID}/todos').json()
+    serialized_todos = {}
+
+    for todo in employee_todos:
+        serialized_todos.update({todo.get("title"): todo.get("completed")})
+
+    COMPLETED_LEN = len([k for k, v in serialized_todos.items() if v is True])
+    with open(str(EMP_ID) + '.csv', "w") as f:
+        [
+            f.write(
+                '"' + str(sys.argv[1]) + '",' +
+                '"' + EMPLOYEE_NAME + '",' +
+                '"' + str(todo["completed"]) + '",' +
+                '"' + todo["title"] + '",' + "\n"
+            )
+            for todo in employee_todos
+        ]
