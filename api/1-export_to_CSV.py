@@ -2,6 +2,7 @@
 """
 Using a REST API and an EMP_ID, save info about their TODO list in a csv file
 """
+import csv
 import requests
 import sys
 
